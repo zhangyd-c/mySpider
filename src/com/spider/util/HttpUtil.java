@@ -181,12 +181,12 @@ public class HttpUtil {
 	public static void close(Closeable... closeables) {
 		if (closeables != null) {
 			for (Closeable closeable : closeables) {
-				try {
-					if (closeable != null) {
+				if (closeable != null) {
+					try {
 						closeable.close();
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -205,7 +205,7 @@ public class HttpUtil {
 	public static void createPng(String localPath, String url) {
 		System.out.println();
 		InputStream is = httpRequestByGetIn(url);
-		FileOutputStream fos;
+		FileOutputStream fos = null;
 		try {
 			File file = new File(localPath);
 			if (!file.exists()) {
@@ -218,12 +218,12 @@ public class HttpUtil {
 			while ((byteCount = is.read(b)) != -1) {
 				fos.write(b, bytesWritten, byteCount);
 			}
-			is.close();
-			fos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			close(is, fos);
 		}
 
 	}
